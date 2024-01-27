@@ -1,0 +1,267 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 5c10e8ea8f6b4775a20041d7471aec54
+      name: Templates/Printers
+  templates:
+    - uuid: b8968164e899451c90c34f43ab03ef54
+      template: 'Canon C3325i Printers'
+      name: 'Canon C3325i Printers'
+      description:
+        ## Overview
+        Canon iR-ADV C3325i/C3725i
+        ## Ресурсы/Resourses
+            # Companies OID info: http://oid-info.com/get/1.3.6.1.4.1.1602
+            # Canon MIBs6: ttps://developers.canon-europe.com/developers/s/mib
+            # UUID generator: https://guidgenerator.com/
+        Monitoring toner levels, counters. Grafics inbox.
+        Считывает уровни по тонеру, счетчики. Графики в комплекте.
+
+        ## Автор/Author
+        Omelyusik Yu.Yu.
+        ## Contact e-mail: omelyusik@bk.ru
+           Вопросы на omelyusik@bk.ru
+
+#       Hello,
+# How do I add custom OIDs? The counters for Canon copiers (iR-ADV C5535) are not populated.
+# OIDs:
+# Here are the good codes:
+# Canon organisation: 1.3.6.1.4.1.1602
+# "113 B&W" Small" .1.3.6.1.4.1.1602.1.11.1.3.1.4.113 --> COPYBLACK A4
+# "122 Colour Large" .1.3.6.1.4.1.1602.1.11.1.3.1.4.122 --> COPYCOLOR A3
+# "123 Colour Small" .1.3.6.1.4.1.1602.1.11.1.3.1.4.123 --> COPYCOLOR A4
+# "101 Total Copy" .1.3.6.1.4.1.1602.1.11.1.3.1.4.101 --> COPYTOTAL
+
+      groups:
+        - name: Templates/Printers
+      items:
+        - uuid: c23c9e3c2b784b75b9cc832e968553ed
+          name: 'Main counter 102 (Total 2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.11.1.3.1.4.102
+          key: C3325i.102
+          delay: 3h
+          history: 30d
+          trends: 180d
+        - uuid: aa4441f01b3443be94e22e35f31a5107
+          name: 'Main counter 112 (Total B&W/Large)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.11.1.3.1.4.112
+          key: C3325i.112
+          delay: 3h
+          history: 30d
+          trends: 180d
+        - uuid: 804e81e3b85546929cb5d535e466d651
+          name: 'Main counter 301 (Print Total 1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.11.1.3.1.4.301
+          key: C3325i.301
+          delay: 3h
+          history: 30d
+          trends: 180d
+        - uuid: e531c2dcc0da44e29e6d33bc28225a10
+          name: 'Main counter 501 (Scan Total 1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.11.1.3.1.4.501
+          key: C3325i.501
+          delay: 3h
+          history: 30d
+          trends: 180d
+        - uuid: f9ee5a655b6946739b21d6003874afea
+          name: 'C3325i SN'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.2.1.4.0
+          key: C3325i.SN
+          delay: 12h
+          trends: '0'
+          value_type: TEXT
+        - uuid: 727b57e0051f46afa39498d110883bf5
+          name: 'C3325i IP adress'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.3.3.1.2.1.1.2.1
+          key: C3325i.system.ip
+          delay: 3h
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+        - uuid: 53edfcde037749f8a7e490544eaf1f03
+          name: 'Main counter 109 (Total B&W 2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.1602.1.11.1.3.1.4.109
+          key: C5540.109
+          delay: 3h
+          history: 30d
+          trends: 180d
+        - uuid: e8930b59fe8b4ca58dfa522aed128e1b
+          name: C3325i.Toner.Cyan.level.now
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.9.1.1
+          key: C3325i.Toner.Cyan.level.now
+          delay: '100'
+          history: 7d
+          trends: 30d
+          value_type: FLOAT
+          description: 'Cyan Toner level now.'
+          units: g
+          tags:
+            -
+              tag: Application
+              value: Счетчики
+          triggers:
+            -
+              uuid: e3d2e039990e4c7ead33e106ab6989f1
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Cyan.level.now)<10'
+              name: 'Голубой тонер заканчивается {HOSTNAME} (<10%)'
+              priority: WARNING
+            -
+              uuid: 01b77210933d439db6e0b829d7e9d9ca
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Cyan.level.now)<20'
+              name: 'Голубой тонер заканчивается {HOSTNAME} (<20%)'
+              priority: INFO
+        - uuid: 93016de7e20d44bba389ac2f8b71e225
+          name: C3325i.Toner.Magenta.level.now
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.9.1.4
+          key: C3325i.Toner.Magenta.level.now
+          delay: '100'
+          history: 7d
+          trends: 30d
+          value_type: FLOAT
+          description: 'Magenta Toner level now.'
+          tags:
+            - tag: Application
+              value: Счетчики
+          triggers:
+            - uuid: 9ae12c132b3c4f2f9f4c05282d2b0ff3
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Magenta.level.now)<10'
+              name: 'Пурпурный тонер заканчивается {HOSTNAME} (<10%)'
+              priority: WARNING
+            - uuid: 4d5fb449715142309ea3766803a7bdf7
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Magenta.level.now)<20'
+              name: 'Пурпурный тонер заканчивается {HOSTNAME} (<20%)'
+              priority: INFO
+        - uuid: f9cd365ff5114f56b0bc899f766c5158
+          name: C3325i.Toner.Yellow.level.now
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.9.1.2
+          key: C3325i.Toner.Yellow.level.now
+          delay: '100'
+          history: 7d
+          trends: 30d
+          value_type: FLOAT
+          description: 'Yellow Toner level now.'
+          tags:
+            - tag: Application
+              value: Счетчики
+          triggers:
+            - uuid: 9740c39fb9e647788440af6392277c3a
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Yellow.level.now)<10'
+              name: 'Желтый тонер заканчивается {HOSTNAME} (<10%)'
+              priority: WARNING
+            - uuid: 707cb0fe807746ba82689e1afd87febe
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Yellow.level.now)<20'
+              name: 'Желтый тонер заканчивается {HOSTNAME} (<20%)'
+              priority: INFO
+        - uuid: b8c42e494a1b4080ac6139074ef6f682
+          name: C3325i.Toner.Black.level.now
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.11.1.1.9.1.3
+          key: C3325i.Toner.Black.level.now
+          delay: '100'
+          history: 7d
+          trends: 30d
+          value_type: FLOAT
+          description: 'Black Toner level now.'
+          tags:
+            -
+              tag: Application
+              value: Счетчики
+          triggers:
+            - uuid: d0907d24fc9d4e36a8ab707095503c6d
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Black.level.now)<10'
+              name: 'Черный тонер заканчиваетсяся {HOSTNAME} (<10%)'
+              priority: WARNING
+            - uuid: f1629db2000f4e0ca20c901599fe9064
+              expression: 'last(/Canon C3325i Printers/C3325i.Toner.Black.level.now)<20'
+              name: 'Черный тонер заканчиваетсяся {HOSTNAME} (<20%)'
+              priority: INFO     
+  graphs:
+    -
+      uuid: d152da4e77454988b16594bbd4606be3
+      name: 'Уровни тонера в картриджах, %'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          drawtype: BOLD_LINE
+          color: 00BFFF
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Cyan.level.now
+        -
+          drawtype: BOLD_LINE
+          color: 3C3C3C
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Black.level.now 
+        -
+          drawtype: BOLD_LINE
+          color: FFFF00
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Yellow.level.now
+        -
+          drawtype: BOLD_LINE
+          color: BF00FF
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Magenta.level.now
+    -
+      uuid: aafff1fd387b4c419f540bc9ba3359b4
+      name: 'Уровень черного тонера в картридже, %'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          drawtype: FILLED_REGION
+          color: 3C3C3C
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Black.level.now 
+    -
+      uuid: 25b1b157f5f34987993223d5781c2d81
+      name: 'Уровень голубого тонера в картридже, %'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          drawtype: FILLED_REGION
+          color: 00BFFF
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Cyan.level.now
+    -
+      uuid: 0eb9f6b7658b47949e666c4ece5168bf
+      name: 'Уровень желтого тонера в картридже, %'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          drawtype: FILLED_REGION
+          color: FFFF00
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Yellow.level.now
+    -
+      uuid: 99c5ac91ee9449ce872dc0440651465f
+      name: 'Уровень пурпурного тонера в картридже, %'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          drawtype: FILLED_REGION
+          color: BF00FF
+          item:
+            host: 'Canon C3325i Printers'
+            key: C3325i.Toner.Magenta.level.now
+    
